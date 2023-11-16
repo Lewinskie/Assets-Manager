@@ -1,47 +1,28 @@
 const express = require("express");
-const session = require("express-session");
-const passport = require("passport");
 const cors = require("cors");
-const helmet = require("helmet");
 require("dotenv").config();
 const { ApolloServer, gql } = require("apollo-server-express");
-const { typeDefs, resolvers } = require("./graphql/schema");
-const models = require("./models");
-const { createAdmin } = require("./utils/initialData");
-const { configurePassport } = require("./auth/passport");
+const schema = require("./graphql/schema");
+const { resolvers } = require("./graphql/resolvers");
+const asset = require("./models/asset");
+const company = require("./models/company");
+const user = require("./models/user");
+const { sequelize } = require("./lib/db");
 
 // THIS IS THE ENTRY POINT FOR MY BACKEND
-
+const models = { asset, company, user };
 // Create an Apollo Server instance
-const server = new ApolloServer({ typeDefs, resolvers, context: { models } });
+const server = new ApolloServer({
+  typeDefs: schema,
+  resolvers,
+  context: { models },
+});
 
 // Create an Express App
 const app = express();
 
-// use Express-session middleware
-app.use(
-  session({
-    secret: process.env.SECRET_KEY,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 24 * 60 * 1000, // 1 day
-    },
-  })
-);
-// Initialize passport
-configurePassport(passport);
-
-// Apply Passport.js middleware
-app.use(passport.initialize());
-app.use(passport.session());
-
 // Enable cors
 app.use(cors());
-
-// Use security headers
-// app.use(helmet());
 
 // Start the Apollo Server
 async function startServer() {
@@ -55,15 +36,12 @@ async function startServer() {
 
   // Authenticate with the database
   try {
-    await models.sequelize.authenticate();
+    await sequelize.authenticate();
     console.log("Connection to the database has been established successfuly");
   } catch (error) {
     console.error("Unable to connect to the database:", error);
   }
 
-  // Create an admin and initial data if not present
-
-  await createAdmin(models);
   app.listen(PORT, () => {
     console.log(`🚀 Server is running at http://localhost:${PORT}/graphql/
     `);

@@ -1,9 +1,10 @@
 {
-  "name": "Asset-Manager",
+  "name": "material-kit-react",
   "version": "3.0.0",
-  "author": "Lewinskie",
+  "author": "Devias",
   "licence": "MIT",
-  "private": true,
+  "homepage": "https://devias.io",
+  "private": false,
   "scripts": {
     "dev": "next",
     "build": "next build",

@@ -1,23 +1,33 @@
-module.exports = (sequelize, DataTypes) => {
-  const Asset = sequelize.define("Asset", {
-    //id
+const { DataTypes } = require("sequelize");
+
+module.exports = (sequelize) => {
+  return sequelize.define("Asset", {
     id: {
       type: DataTypes.INTEGER(10),
       allowNull: false,
       primaryKey: true,
       autoIncrement: true,
     },
-    // Device
-    device: { type: DataTypes.STRING, allowNull: false },
 
-    // Description
-    description: { type: DataTypes.TEXT, allowNull: false },
+    device: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
 
-    //Serial Number
-    serialNumber: { type: DataTypes.STRING, allowNull: false },
+    description: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
 
-    //Assignee
-    assignee: { type: DataTypes.STRING, allowNull: false },
+    serialNumber: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+
+    assignee: {
+      type: DataTypes.STRING,
+
+      allowNull: false,
+    },
   });
-  return Asset;
 };

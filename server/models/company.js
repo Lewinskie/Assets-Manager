@@ -1,13 +1,15 @@
-// const { DataTypes } = require("sequelize");
-// const { sequelize } = require(".");
+const { DataTypes } = require("sequelize");
 
-module.exports = (sequelize, DataTypes) => {
-  const Company = sequelize.define("Company", {
+module.exports = (sequelize) => {
+  return sequelize.define("Company", {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
     name: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(100),
       allowNull: false,
     },
   });
-  return Company;
 };
-
