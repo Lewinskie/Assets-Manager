@@ -1,24 +1,28 @@
 const express = require("express");
+const cors = require("cors");
+require("dotenv").config();
 const { ApolloServer, gql } = require("apollo-server-express");
-// const typeDefs = require('./path-to-your-schema'); // Replace with the path to your GraphQL schema
-// const resolvers = require('./path-to-your-resolvers'); // Replace with the path to your GraphQL resolvers
-const typeDefs = gql`
-  type Query {
-    hello: String!
-  }
-`;
+const schema = require("./graphql/schema");
+const { resolvers } = require("./graphql/resolvers");
+const asset = require("./models/asset");
+const company = require("./models/company");
+const user = require("./models/user");
+const { sequelize } = require("./lib/db");
 
-const resolvers = {
-  Query: {
-    hello: () => "Hello world",
-  },
-};
-
+// THIS IS THE ENTRY POINT FOR MY BACKEND
+const models = { asset, company, user };
 // Create an Apollo Server instance
-const server = new ApolloServer({ typeDefs, resolvers });
+const server = new ApolloServer({
+  typeDefs: schema,
+  resolvers,
+  context: { models },
+});
 
 // Create an Express App
 const app = express();
+
+// Enable cors
+app.use(cors());
 
 // Start the Apollo Server
 async function startServer() {
@@ -28,9 +32,19 @@ async function startServer() {
   server.applyMiddleware({ app });
 
   // Start the Express server
-  const PORT = process.env.PORT || 4000;
+  const PORT = process.env.PORT;
+
+  // Authenticate with the database
+  try {
+    await sequelize.authenticate();
+    console.log("Connection to the database has been established successfuly");
+  } catch (error) {
+    console.error("Unable to connect to the database:", error);
+  }
+
   app.listen(PORT, () => {
-    console.log(`🚀 Server is running at http://localhost:${PORT}/graphql`);
+    console.log(`🚀 Server is running at http://localhost:${PORT}/graphql/
+    `);
   });
 }
 
