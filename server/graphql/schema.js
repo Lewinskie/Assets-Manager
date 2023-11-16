@@ -1,80 +1,92 @@
-const { buildSchema } = require("graphql");
-const schema = buildSchema(`
-type User{
-  id:ID!
-  username:String!
-  email:String!
-}
-type AuthPayload{
-  token: String!
-  user: User
-}
-type Query{
-  users:[User]
-  user(id:Int!):User
-}
-type Mutation{
-  createUser(username:String!,email:String!,password:String!):User
-  updateUser(id: Int!, name: String, email: String): User
-  deleteUser(id: Int!): User
-  register(name: String!, email: String!, password: String!): AuthPayload
-  login(email:String!, password:String!):AuthPayload
-  
-}
+// const { buildSchema } = require("graphql");
+// const schema = buildSchema(`
+// type User{
+//   id:ID!
+//   username:String!
+//   email:String!
+// }
+// type AuthPayload{
+//   token: String!
+//   user: User
+// }
+// type Query{
+//   users:[User]
+//   user(id:Int!):User
+// }
+// type Mutation{
+//   createUser(username:String!,email:String!,password:String!):User
+//   updateUser(id: Int!, name: String, email: String): User
+//   deleteUser(id: Int!): User
+//   register(name: String!, email: String!, password: String!): AuthPayload
+//   login(email:String!, password:String!):AuthPayload
 
-`);
-module.exports = schema;
+// }
 
-// const { gql } = require("apollo-server-express");
+// `);
+// module.exports = schema;
 
-// const typeDefs = gql`
-//   # type Company
-//   type Company {
-//     id: ID!
-//     name: String!
-//     assets: [Asset]
-//   }
+const { gql } = require("apollo-server-express");
 
-//   # type Asset
-//   type Asset {
-//     id: ID!
-//     companyId: ID!
-//     device: String!
-//     description: String!
-//     serialNumber: String!
-//     assignee: String!
-//   }
+const typeDefs = gql`
+  #type User
+  type User {
+    _id: ID!
+    username: String!
+    email: String!
+    password: String!
+  }
+  # type Company
+  type Company {
+    id: ID!
+    name: String!
+    assets: [Asset]
+  }
 
-//   #type Query
-//   type Query {
-//     companies: [Company]
-//     company(id: ID!): Company
-//     assets: [Asset]
-//     asset(id: ID!): Asset
-//   }
+  # type Asset
+  type Asset {
+    id: ID!
+    companyId: ID!
+    device: String!
+    description: String!
+    serialNumber: String!
+    assignee: String!
+  }
 
-//   # type Mutation
-//   type Mutation {
-//     addCompany(name: String!): Company
-//     deleteCompany(id: ID!): Boolean
-//     addAsset(
-//       device: String!
-//       description: String!
-//       serialNumber: String!
-//       assignee: String!
-//       companyId: ID!
-//     ): Asset
-//     deleteAsset(id: ID!): Boolean
-//     updateAsset(
-//       id: ID!
-//       device: String
-//       description: String
-//       serialNumber: String
-//       assignee: String
-//       companyId: ID!
-//     ): Asset
-//   }
-// `;
+  #type Query
+  type Query {
+    users: [User]
+    user(email: String!): User
+    companies: [Company]
+    company(id: ID!): Company
+    assets: [Asset]
+    asset(id: ID!): Asset
+  }
+
+  # type Mutation
+  type Mutation {
+    createUser(username: String!, email: String!, password: String!): User
+    updateUser(_id: ID, username: String, email: String, password: String): User
+    deleteUser(_id: ID!): User
+    addCompany(name: String!): Company
+    deleteCompany(id: ID!): Boolean
+    addAsset(
+      device: String!
+      description: String!
+      serialNumber: String!
+      assignee: String!
+      companyId: ID!
+    ): Asset
+    deleteAsset(id: ID!): Boolean
+    updateAsset(
+      id: ID!
+      device: String
+      description: String
+      serialNumber: String
+      assignee: String
+      companyId: ID!
+    ): Asset
+  }
+`;
 
 // const resolvers = {
 //   Query: {
@@ -123,4 +135,4 @@ module.exports = schema;
 //   },
 // };
 
-// module.exports = { typeDefs, resolvers };
+module.exports = typeDefs;
