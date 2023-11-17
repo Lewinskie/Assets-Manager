@@ -1,7 +1,5 @@
-const { DataTypes } = require("sequelize");
-
-module.exports = (sequelize) => {
-  return sequelize.define("Company", {
+module.exports = (sequelize, DataTypes) => {
+  const Company = sequelize.define("Company", {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
@@ -9,7 +7,11 @@ module.exports = (sequelize) => {
     },
     name: {
       type: DataTypes.STRING(100),
-      allowNull: false,
     },
   });
+  // Associations
+  Company.associate = (models) => {
+    models.Company.hasMany(models.Asset, { foreignKey: "companyId" });
+  };
+  return Company;
 };
