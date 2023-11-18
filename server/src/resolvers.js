@@ -91,6 +91,10 @@ const resolvers = {
     },
 
     async deleteCompany(_, { id }, { models }) {
+      // Delete associated assets first
+      await models.Asset.destroy({ where: { companyId: id } });
+
+      // Now delete the company
       await models.Company.destroy({ where: { id } });
       return "Company deleted successfully";
     },

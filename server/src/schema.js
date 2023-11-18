@@ -64,11 +64,11 @@ const typeDefs = gql`
       assignee: String
       location: String
     ): Asset
-    deleteAsset(id: ID!): String!
+    deleteAsset(id: ID!): String
 
     # Company Mutations
     createCompany(name: String!): Company!
-    deleteCompany(id: ID!): String!
+    deleteCompany(id: ID!): String
   }
 `;
 
