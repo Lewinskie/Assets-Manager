@@ -1,57 +1,41 @@
-import { useEffect, useRef, useState } from 'react';
-import { useRouter } from 'next/router';
-import PropTypes from 'prop-types';
-import { useAuthContext } from 'src/contexts/auth-context';
+import { useEffect } from "react";
+import { useRouter } from "next/router";
+import PropTypes from "prop-types";
+import { useQuery } from "@apollo/client";
+import { useAuthContext } from "src/contexts/auth-context";
+import { CHECK_AUTH } from "src/graphql/queries";
 
 export const AuthGuard = (props) => {
   const { children } = props;
   const router = useRouter();
-  const { isAuthenticated } = useAuthContext();
-  const ignore = useRef(false);
-  const [checked, setChecked] = useState(false);
+  const { data, loading, error } = useQuery(CHECK_AUTH);
+  const { isAuthenticated, isLoading } = useAuthContext();
 
-  // Only do authentication check on component mount.
-  // This flow allows you to manually redirect the user after sign-out, otherwise this will be
-  // triggered and will automatically redirect to sign-in page.
+  useEffect(() => {
+    if (!router.isReady) {
+      return;
+    }
 
-  useEffect(
-    () => {
-      if (!router.isReady) {
-        return;
-      }
+    // Redirect if not authenticated and not loading
+    if (!data && !loading && !isAuthenticated) {
+      console.log("Not authenticated, redirecting");
+      router
+        .replace({
+          pathname: "/auth/login",
+          query: router.asPath !== "/" ? { continueUrl: router.asPath } : undefined,
+        })
+        .catch(console.error);
+    }
+  }, [router.isReady, loading, error, data]);
 
-      // Prevent from calling twice in development mode with React.StrictMode enabled
-      if (ignore.current) {
-        return;
-      }
-
-      ignore.current = true;
-
-      if (!isAuthenticated) {
-        console.log('Not authenticated, redirecting');
-        router
-          .replace({
-            pathname: '/auth/login',
-            query: router.asPath !== '/' ? { continueUrl: router.asPath } : undefined
-          })
-          .catch(console.error);
-      } else {
-        setChecked(true);
-      }
-    },
-    [router.isReady]
-  );
-
-  if (!checked) {
+  // If Loading or not Authenticated, dont render anything
+  if (isLoading || !isAuthenticated) {
     return null;
   }
-
-  // If got here, it means that the redirect did not occur, and that tells us that the user is
-  // authenticated / authorized.
 
   return children;
 };
 
 AuthGuard.propTypes = {
-  children: PropTypes.node
+  children: PropTypes.node,
 };

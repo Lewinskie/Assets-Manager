@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import Head from "next/head";
 import NextLink from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/router";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import {
@@ -16,17 +16,18 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useAuth } from "src/hooks/use-auth";
+// import { useAuth } from "src/hooks/use-auth";
+import { useAuthContext } from "src/contexts/auth-context";
 import { Layout as AuthLayout } from "src/layouts/auth/layout";
 
 const Page = () => {
   const router = useRouter();
-  const auth = useAuth();
+  const authContext = useAuthContext();
   const [method, setMethod] = useState("email");
   const formik = useFormik({
     initialValues: {
-      email: "demo@devias.io",
-      password: "Password123!",
+      email: "",
+      password: "",
       submit: null,
     },
     validationSchema: Yup.object({
@@ -35,7 +36,7 @@ const Page = () => {
     }),
     onSubmit: async (values, helpers) => {
       try {
-        await auth.signIn(values.email, values.password);
+        await authContext.signIn(values.email, values.password);
         router.push("/");
       } catch (err) {
         helpers.setStatus({ success: false });
@@ -49,15 +50,10 @@ const Page = () => {
     setMethod(value);
   }, []);
 
-  const handleSkip = useCallback(() => {
-    auth.skip();
-    router.push("/");
-  }, [auth, router]);
-
   return (
     <>
       <Head>
-        <title>Login | Devias Kit</title>
+        <title>Login | Assets Manager</title>
       </Head>
       <Box
         sx={{
@@ -121,23 +117,23 @@ const Page = () => {
                     value={formik.values.password}
                   />
                 </Stack>
-                <FormHelperText sx={{ mt: 1 }}>Optionally you can skip.</FormHelperText>
+                {/* <FormHelperText sx={{ mt: 1 }}>Optionally you can skip.</FormHelperText>
                 {formik.errors.submit && (
                   <Typography color="error" sx={{ mt: 3 }} variant="body2">
                     {formik.errors.submit}
                   </Typography>
-                )}
+                )} */}
                 <Button fullWidth size="large" sx={{ mt: 3 }} type="submit" variant="contained">
                   Continue
                 </Button>
-                <Button fullWidth size="large" sx={{ mt: 3 }} onClick={handleSkip}>
+                {/* <Button fullWidth size="large" sx={{ mt: 3 }} onClick={handleSkip}>
                   Skip authentication
                 </Button>
                 <Alert color="primary" severity="info" sx={{ mt: 3 }}>
                   <div>
                     You can use <b>demo@devias.io</b> and password <b>Password123!</b>
                   </div>
-                </Alert>
+                </Alert> */}
               </form>
             )}
             {method === "phoneNumber" && (

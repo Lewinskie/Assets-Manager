@@ -3,11 +3,23 @@ const jwt = require("jsonwebtoken");
 
 const resolvers = {
   Query: {
-    async user(_, { id }, { models }) {
-      return models.User.findByPk(id);
-    },
     async users(_, __, { models }) {
       return await models.User.findAll();
+    },
+    async checkAuth(_, __, { models }) {
+      try {
+        if (!user) {
+          throw new Error("User not found");
+        }
+        const user = await models.User.findOne({ id: user.id });
+        if (!user) {
+          throw new Error("User not found");
+        }
+
+        return user;
+      } catch (error) {
+        throw new Error("Not authenticated");
+      }
     },
     async companies(_, __, { models }) {
       return models.Company.findAll();
@@ -17,6 +29,9 @@ const resolvers = {
     },
     async assets(_, __, { models }) {
       return models.Asset.findAll();
+    },
+    async asset(_, { id }, { models }) {
+      return models.Asset.findByPk(id);
     },
   },
   Mutation: {
@@ -37,11 +52,12 @@ const resolvers = {
       if (!valid) {
         throw new Error("Invalid Password or Email");
       }
-      const token = jwt.sign({ userId: user.id }, secret);
-      return {
-        token,
-        user,
-      };
+      // const token = jwt.sign({ userId: user.id }, secret);
+      // return {
+      //   token,
+      //   user,
+      // };
+      return user;
     },
     async logout(_, __, { req, res }) {
       // Clear the user session or token on logout

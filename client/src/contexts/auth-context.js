@@ -1,16 +1,19 @@
-import { createContext, useContext, useEffect, useReducer, useRef } from 'react';
-import PropTypes from 'prop-types';
+import { createContext, useContext, useEffect, useReducer, useRef } from "react";
+import { useMutation, useQuery } from "@apollo/client";
+import PropTypes from "prop-types";
+import { LOGIN, REGISTER, LOGOUT } from "src/graphql/mutations";
+import { CHECK_AUTH, USER } from "src/graphql/queries";
 
 const HANDLERS = {
-  INITIALIZE: 'INITIALIZE',
-  SIGN_IN: 'SIGN_IN',
-  SIGN_OUT: 'SIGN_OUT'
+  INITIALIZE: "INITIALIZE",
+  SIGN_IN: "SIGN_IN",
+  SIGN_OUT: "SIGN_OUT",
 };
 
 const initialState = {
   isAuthenticated: false,
   isLoading: true,
-  user: null
+  user: null,
 };
 
 const handlers = {
@@ -19,18 +22,9 @@ const handlers = {
 
     return {
       ...state,
-      ...(
-        // if payload (user) is provided, then is authenticated
-        user
-          ? ({
-            isAuthenticated: true,
-            isLoading: false,
-            user
-          })
-          : ({
-            isLoading: false
-          })
-      )
+      isAuthenticated: !!user,
+      isLoading: false,
+      user,
     };
   },
   [HANDLERS.SIGN_IN]: (state, action) => {
@@ -39,30 +33,38 @@ const handlers = {
     return {
       ...state,
       isAuthenticated: true,
-      user
+      user,
     };
   },
   [HANDLERS.SIGN_OUT]: (state) => {
     return {
       ...state,
       isAuthenticated: false,
-      user: null
+      user: null,
     };
-  }
+  },
 };
 
-const reducer = (state, action) => (
-  handlers[action.type] ? handlers[action.type](state, action) : state
-);
+const reducer = (state, action) =>
+  handlers[action.type] ? handlers[action.type](state, action) : state;
 
 // The role of this context is to propagate authentication state through the App tree.
 
-export const AuthContext = createContext({ undefined });
+export const AuthContext = createContext();
 
 export const AuthProvider = (props) => {
   const { children } = props;
   const [state, dispatch] = useReducer(reducer, initialState);
   const initialized = useRef(false);
+
+  const [login] = useMutation(LOGIN);
+  const [register] = useMutation(REGISTER);
+  const [logout] = useMutation(LOGOUT);
+
+  const { data: checkAuth } = useQuery(CHECK_AUTH);
+  const { data } = useQuery(USER, {
+    variables: checkAuth?.user.id,
+  });
 
   const initialize = async () => {
     // Prevent from calling twice in development mode with React.StrictMode enabled
@@ -72,29 +74,33 @@ export const AuthProvider = (props) => {
 
     initialized.current = true;
 
-    let isAuthenticated = false;
+    // let isAuthenticated = false;
 
-    try {
-      isAuthenticated = window.sessionStorage.getItem('authenticated') === 'true';
-    } catch (err) {
-      console.error(err);
-    }
+    // try {
+    //   isAuthenticated = window.sessionStorage.getItem("authenticated") === "true";
+    // } catch (err) {
+    //   console.error(err);
+    // }
+    const isAuthenticated = checkAuth && checkAuth.checkAuth;
 
     if (isAuthenticated) {
-      const user = {
-        id: '5e86809283e28b96d2d38537',
-        avatar: '/assets/avatars/avatar-anika-visser.png',
-        name: 'Anika Visser',
-        email: 'anika.visser@devias.io'
-      };
+      try {
+        const { data } = await useQuery(USER, {
+          variables: {
+            id: checkAuth?.userID,
+          },
+        });
 
-      dispatch({
-        type: HANDLERS.INITIALIZE,
-        payload: user
-      });
+        dispatch({
+          type: HANDLERS.INITIALIZE,
+          payload: data && data.user,
+        });
+      } catch (error) {
+        console.error(error);
+      }
     } else {
       dispatch({
-        type: HANDLERS.INITIALIZE
+        type: HANDLERS.INITIALIZE,
       });
     }
   };
@@ -107,57 +113,48 @@ export const AuthProvider = (props) => {
     []
   );
 
-  const skip = () => {
-    try {
-      window.sessionStorage.setItem('authenticated', 'true');
-    } catch (err) {
-      console.error(err);
-    }
-
-    const user = {
-      id: '5e86809283e28b96d2d38537',
-      avatar: '/assets/avatars/avatar-anika-visser.png',
-      name: 'Anika Visser',
-      email: 'anika.visser@devias.io'
-    };
-
-    dispatch({
-      type: HANDLERS.SIGN_IN,
-      payload: user
-    });
-  };
-
   const signIn = async (email, password) => {
-    if (email !== 'demo@devias.io' || password !== 'Password123!') {
-      throw new Error('Please check your email and password');
-    }
-
     try {
-      window.sessionStorage.setItem('authenticated', 'true');
-    } catch (err) {
-      console.error(err);
+      const { data } = await login({
+        variables: { email, password },
+      });
+      dispatch({
+        type: HANDLERS.SIGN_IN,
+        payload: data.login.user,
+      });
+    } catch (error) {
+      console.error(error);
     }
-
-    const user = {
-      id: '5e86809283e28b96d2d38537',
-      avatar: '/assets/avatars/avatar-anika-visser.png',
-      name: 'Anika Visser',
-      email: 'anika.visser@devias.io'
-    };
-
-    dispatch({
-      type: HANDLERS.SIGN_IN,
-      payload: user
-    });
+    // try {
+    //   window.sessionStorage.setItem("authenticated", "true");
+    // } catch (err) {
+    //   console.error(err);
+    // }
   };
 
   const signUp = async (email, name, password) => {
-    throw new Error('Sign up is not implemented');
+    try {
+      const { data } = await register({
+        variables: { email, name, password },
+      });
+
+      dispatch({
+        type: HANDLERS.SIGN_IN,
+        payload: data.register.user,
+      });
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  const signOut = () => {
+  const signOut = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error(error);
+    }
     dispatch({
-      type: HANDLERS.SIGN_OUT
+      type: HANDLERS.SIGN_OUT,
     });
   };
 
@@ -165,10 +162,10 @@ export const AuthProvider = (props) => {
     <AuthContext.Provider
       value={{
         ...state,
-        skip,
+
         signIn,
         signUp,
-        signOut
+        signOut,
       }}
     >
       {children}
@@ -177,7 +174,7 @@ export const AuthProvider = (props) => {
 };
 
 AuthProvider.propTypes = {
-  children: PropTypes.node
+  children: PropTypes.node,
 };
 
 export const AuthConsumer = AuthContext.Consumer;
