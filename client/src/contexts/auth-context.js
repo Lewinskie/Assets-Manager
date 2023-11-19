@@ -36,6 +36,7 @@ const handlers = {
       user,
     };
   },
+
   [HANDLERS.SIGN_OUT]: (state) => {
     return {
       ...state,
@@ -74,13 +75,6 @@ export const AuthProvider = (props) => {
 
     initialized.current = true;
 
-    // let isAuthenticated = false;
-
-    // try {
-    //   isAuthenticated = window.sessionStorage.getItem("authenticated") === "true";
-    // } catch (err) {
-    //   console.error(err);
-    // }
     const isAuthenticated = checkAuth && checkAuth.checkAuth;
 
     if (isAuthenticated) {
@@ -125,11 +119,6 @@ export const AuthProvider = (props) => {
     } catch (error) {
       console.error(error);
     }
-    // try {
-    //   window.sessionStorage.setItem("authenticated", "true");
-    // } catch (err) {
-    //   console.error(err);
-    // }
   };
 
   const signUp = async (email, name, password) => {

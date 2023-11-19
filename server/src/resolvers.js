@@ -52,11 +52,7 @@ const resolvers = {
       if (!valid) {
         throw new Error("Invalid Password or Email");
       }
-      // const token = jwt.sign({ userId: user.id }, secret);
-      // return {
-      //   token,
-      //   user,
-      // };
+   
       return user;
     },
     async logout(_, __, { req, res }) {
