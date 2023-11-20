@@ -29,13 +29,13 @@ const App = (props) => {
   const theme = createTheme();
 
   return (
-    <CacheProvider value={emotionCache}>
-      <Head>
-        <title>Devias Kit</title>
-        <meta name="viewport" content="initial-scale=1, width=device-width" />
-      </Head>
-      <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <ApolloProvider client={client}>
+    <ApolloProvider client={client}>
+      <CacheProvider value={emotionCache}>
+        <Head>
+          <title>Assets Manager</title>
+          <meta name="viewport" content="initial-scale=1, width=device-width" />
+        </Head>
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
           <AuthProvider>
             <ThemeProvider theme={theme}>
               <CssBaseline />
@@ -46,9 +46,9 @@ const App = (props) => {
               </AuthConsumer>
             </ThemeProvider>
           </AuthProvider>
-        </ApolloProvider>
-      </LocalizationProvider>
-    </CacheProvider>
+        </LocalizationProvider>
+      </CacheProvider>
+    </ApolloProvider>
   );
 };
 

@@ -37,7 +37,7 @@ const Page = () => {
   return (
     <>
       <Head>
-        <title>Register | Devias Kit</title>
+        <title>Register | Assets Manager</title>
       </Head>
       <Box
         sx={{

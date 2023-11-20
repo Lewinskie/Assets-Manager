@@ -3,8 +3,6 @@ import NextLink from "next/link";
 import { Box, Typography, Unstable_Grid2 as Grid } from "@mui/material";
 import { Logo } from "src/components/logo";
 
-// TODO: Change subtitle text
-
 export const Layout = (props) => {
   const { children } = props;
 
@@ -19,6 +17,7 @@ export const Layout = (props) => {
       <Grid container sx={{ flex: "1 1 auto" }}>
         <Grid
           xs={12}
+          md={7}
           lg={6}
           sx={{
             backgroundColor: "background.paper",
@@ -42,24 +41,29 @@ export const Layout = (props) => {
               href="/"
               sx={{
                 display: "inline-flex",
-                height: 32,
-                width: 32,
+                height: 80,
+                width: 80,
               }}
             >
-              <Logo />
+              <img alt="logo" src="/assets/logos/logo.png" />
             </Box>
           </Box>
           {children}
         </Grid>
         <Grid
           xs={12}
+          md={5}
           lg={6}
           sx={{
+            display: {
+              xs: "none",
+              md: "flex",
+            },
             alignItems: "center",
             background: "radial-gradient(50% 50% at 50% 50%, #122647 0%, #090E23 100%)",
             color: "white",
-            display: "flex",
             justifyContent: "center",
+            minHeight: "100%",
             "& img": {
               maxWidth: "100%",
             },
