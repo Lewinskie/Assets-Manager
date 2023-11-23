@@ -2,18 +2,19 @@ import { useCallback } from "react";
 import { useRouter } from "next/navigation";
 import PropTypes from "prop-types";
 import { Box, Divider, MenuItem, MenuList, Popover, Typography } from "@mui/material";
-import { useAuth } from "src/hooks/use-auth";
+import { useAuth } from "src/context/auth-context";
 
 export const AccountPopover = (props) => {
   const { anchorEl, onClose, open } = props;
   const router = useRouter();
-  const auth = useAuth();
+  const { signOut, user } = useAuth();
+  console.log(user);
 
   const handleSignOut = useCallback(() => {
     onClose?.();
-    auth.signOut();
+    signOut();
     router.push("/auth/login");
-  }, [onClose, auth, router]);
+  }, [onClose, router]);
 
   return (
     <Popover
@@ -34,7 +35,8 @@ export const AccountPopover = (props) => {
       >
         <Typography variant="overline">Account</Typography>
         <Typography color="text.secondary" variant="body2">
-          Anika Visser
+          {/* Revisit to fix to store data on localStorage  */}
+          {user ? user.username : "User"}
         </Typography>
       </Box>
       <Divider />

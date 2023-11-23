@@ -5,7 +5,6 @@ const typeDefs = gql`
     id: ID!
     username: String!
     email: String!
-    password: String!
   }
 
   type Asset {
@@ -23,12 +22,17 @@ const typeDefs = gql`
     name: String!
     assets: [Asset]
   }
+  type AuthData {
+    id: ID!
+    token: String!
+    user:User
+  }
 
   type Query {
     #User
-    # user(id: ID!): User
+    user(id: ID!): User
     users: [User]
-    checkAuth: User!
+    checkAuth: AuthData
 
     # Company
     companies: [Company]
@@ -42,7 +46,7 @@ const typeDefs = gql`
   type Mutation {
     # User Mutations
     register(username: String!, email: String!, password: String!): User!
-    login(email: String!, password: String!): User!
+    login(email: String!, password: String!): AuthData
     logout: String!
 
     # Asset Mutations

@@ -1,18 +1,18 @@
 import { gql } from "@apollo/client";
 
 export const CHECK_AUTH = gql`
-  query {
+  query CheckAuth {
     checkAuth {
       id
-      username
-      email
+      token
+      user
     }
   }
 `;
 
-export const USER = gql`
-  query {
-    user {
+export const GET_USER = gql`
+  query User($userId: ID!) {
+    user(id: $userId) {
       id
       username
       email
