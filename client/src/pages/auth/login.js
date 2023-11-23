@@ -16,12 +16,15 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useAuthContext } from "src/contexts/auth-context";
+
 import { Layout as AuthLayout } from "src/layouts/auth/layout";
+import { useAuth } from "src/context/auth-context";
 
 const Page = () => {
+  const { signIn } = useAuth();
   const router = useRouter();
-  const authContext = useAuthContext();
+  // const { user, isLoading, signIn } = useAuth();
+
   const [method, setMethod] = useState("email");
   const formik = useFormik({
     initialValues: {
@@ -35,7 +38,7 @@ const Page = () => {
     }),
     onSubmit: async (values, helpers) => {
       try {
-        await authContext.signIn(values.email, values.password);
+        await signIn(values.email, values.password);
         router.push("/");
       } catch (err) {
         helpers.setStatus({ success: false });

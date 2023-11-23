@@ -1,22 +1,37 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const { generateToken } = require("../utils/generate-token");
 
 const resolvers = {
   Query: {
     async users(_, __, { models }) {
       return await models.User.findAll();
     },
-    async checkAuth(_, __, { models }) {
-      try {
-        if (!user) {
-          throw new Error("User not found");
-        }
-        const user = await models.User.findOne({ id: user.id });
-        if (!user) {
-          throw new Error("User not found");
-        }
+    async user(_, { id }, { models }) {
+      return await models.User.findByPk(id);
+    },
 
-        return user;
+    async checkAuth(_, __, { models, req }) {
+      try {
+        const userId = req.id;
+
+        if (!userId) {
+          throw new Error("User not found");
+        }
+        const user = await models.User.findByPk(userId);
+        if (!user) {
+          throw new Error("User not found");
+        }
+        const token = generateToken(user);
+
+        return {
+          id: user.id,
+          token,
+          user: {
+            username: user.username,
+            email: user.email,
+          },
+        };
       } catch (error) {
         throw new Error("Not authenticated");
       }
@@ -37,13 +52,14 @@ const resolvers = {
   Mutation: {
     // Users
     async register(_, { username, email, password }, { models }) {
-      return models.User.create({
+      const user = models.User.create({
         username,
         email,
         password: await bcrypt.hash(password, 10),
       });
+      return user;
     },
-    async login(_, { email, password }, { models, secret }) {
+    async login(_, { email, password }, { models }) {
       const user = await models.User.findOne({ where: { email } });
       if (!user) {
         throw new Error("User not found");
@@ -52,12 +68,29 @@ const resolvers = {
       if (!valid) {
         throw new Error("Invalid Password or Email");
       }
-   
-      return user;
+      const token = generateToken(user);
+
+      // Save token to local storage
+      // if (typeof localStorage !== "undefined") {
+      //   localStorage.setItem("authToken", token, "user", user);
+      // }
+
+      return {
+        id: user.id,
+        token,
+        user: {
+          id: user.id,
+          username: user.username,
+          email: user.email,
+        },
+      };
     },
     async logout(_, __, { req, res }) {
       // Clear the user session or token on logout
       res.clearCookie("token");
+      // if (typeof localStorage !== "undefined") {
+      //   localStorage.removeItem("authToken", "user");
+      // }
       return "User successfully logged out";
     },
 
