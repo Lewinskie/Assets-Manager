@@ -25,7 +25,7 @@ const logos = [
     description:
       "Dragonfly Aviation Limited is an aviation company specializing in passenger and cargo services within Africa, the Indian Ocean Islands, and the Middle East.",
   },
-  { name: "Advantage Air Travel", src: "/assets/logos/advantage.png", description: "test" },
+  { name: "Advantage Air Travel", src: "/assets/logos/advantage.png", description: "Advantage Air Travel Limited is an aviation company specializing in the provision of cargo freight services in East Africa, the Horn of Africa and regionally in the continent." },
 ];
 
 const Page = () => {
