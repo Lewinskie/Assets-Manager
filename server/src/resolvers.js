@@ -70,11 +70,6 @@ const resolvers = {
       }
       const token = generateToken(user);
 
-      // Save token to local storage
-      // if (typeof localStorage !== "undefined") {
-      //   localStorage.setItem("authToken", token, "user", user);
-      // }
-
       return {
         id: user.id,
         token,
@@ -131,7 +126,7 @@ const resolvers = {
     },
 
     // Company
-    async createCompany(_, { name }, { models }) {
+    async createCompany(_, { name, logo }, { models }) {
       return models.Company.create({ name });
     },
 

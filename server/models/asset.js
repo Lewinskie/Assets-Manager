@@ -28,6 +28,12 @@ module.exports = (sequelize, DataTypes) => {
       companyId: {
         type: INTEGER,
       },
+      createdAt: {
+        type: DataTypes.DATE,
+      },
+      updatedAt: {
+        type: DataTypes.DATE,
+      },
     },
     {}
   );

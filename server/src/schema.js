@@ -5,6 +5,8 @@ const typeDefs = gql`
     id: ID!
     username: String!
     email: String!
+    createdAt: String!
+    updatedAt: String!
   }
 
   type Asset {
@@ -15,17 +17,21 @@ const typeDefs = gql`
     assignee: String!
     location: String!
     companyId: String!
+    createdAt: String!
+    updatedAt: String!
   }
 
   type Company {
     id: ID!
     name: String!
+    createdAt: String!
+    updatedAt: String!
     assets: [Asset]
   }
   type AuthData {
     id: ID!
     token: String!
-    user:User
+    user: User
   }
 
   type Query {

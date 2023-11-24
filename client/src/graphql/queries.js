@@ -16,6 +16,8 @@ export const GET_USER = gql`
       id
       username
       email
+      createdAt
+      updatedAt
     }
   }
 `;
@@ -25,7 +27,8 @@ export const USERS = gql`
       id
       username
       email
-      password
+      createdAt
+      updatedAt
     }
   }
 `;
@@ -34,6 +37,8 @@ export const COMPANY = gql`
     company(id: $companyId) {
       id
       name
+      createdAt
+      updatedAt
       assets {
         id
         device
@@ -42,15 +47,19 @@ export const COMPANY = gql`
         assignee
         location
         companyId
+        createdAt
+        updatedAt
       }
     }
   }
 `;
 export const COMPANIES = gql`
-  query {
+  query Companies {
     companies {
       id
       name
+      updatedAt
+      createdAt
       assets {
         id
         device
@@ -59,6 +68,8 @@ export const COMPANIES = gql`
         assignee
         location
         companyId
+        createdAt
+        updatedAt
       }
     }
   }
@@ -74,6 +85,8 @@ export const ASSET = gql`
       assignee
       location
       companyId
+      createdAt
+      updatedAt
     }
   }
 `;
@@ -88,6 +101,8 @@ export const ASSETS = gql`
       assignee
       location
       companyId
+      createdAt
+      updatedAt
     }
   }
 `;
