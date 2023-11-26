@@ -16,7 +16,8 @@ import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
 import { CompanyCard } from "src/sections/companies/company-card";
 import { CompaniesSearch } from "src/sections/companies/companies-search";
 import { useQuery, useMutation } from "@apollo/client";
-import { COMPANY, COMPANIES } from "src/graphql/queries";
+import { COMPANIES } from "src/graphql/queries";
+import Link from "next/link";
 
 const logos = [
   {
@@ -25,7 +26,12 @@ const logos = [
     description:
       "Dragonfly Aviation Limited is an aviation company specializing in passenger and cargo services within Africa, the Indian Ocean Islands, and the Middle East.",
   },
-  { name: "Advantage Air Travel", src: "/assets/logos/advantage.png", description: "Advantage Air Travel Limited is an aviation company specializing in the provision of cargo freight services in East Africa, the Horn of Africa and regionally in the continent." },
+  {
+    name: "Advantage Air Travel",
+    src: "/assets/logos/advantage.png",
+    description:
+      "Advantage Air Travel Limited is an aviation company specializing in the provision of cargo freight services in East Africa, the Horn of Africa and regionally in the continent.",
+  },
 ];
 
 const Page = () => {
@@ -78,7 +84,13 @@ const Page = () => {
             <Grid container spacing={3}>
               {companies.map((company) => (
                 <Grid xs={12} md={6} lg={4} key={company.id}>
-                  <CompanyCard company={company} logos={logos} />
+                  <Link
+                    href={`/companies/${company.id}`}
+                    passHref
+                    style={{ textDecoration: "none" }}
+                  >
+                    <CompanyCard company={company} logos={logos} />
+                  </Link>
                 </Grid>
               ))}
             </Grid>

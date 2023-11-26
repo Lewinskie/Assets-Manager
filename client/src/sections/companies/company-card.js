@@ -1,13 +1,27 @@
 import PropTypes from "prop-types";
 import ArrowDownOnSquareIcon from "@heroicons/react/24/solid/ArrowDownOnSquareIcon";
 import ClockIcon from "@heroicons/react/24/solid/ClockIcon";
-import { Avatar, Box, Card, CardContent, Divider, Stack, SvgIcon, Typography } from "@mui/material";
+import {
+  Avatar,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Divider,
+  Stack,
+  SvgIcon,
+  Typography,
+} from "@mui/material";
+import { convertTimestampToDate } from "src/utils/get-date";
+
 
 export const CompanyCard = (props) => {
   const { company, logos } = props;
 
   // Find the corresponding logo based on the company's name
   const logo = logos.find((item) => item.name === company.name);
+  const timestamp = company.updatedAt;
+  const time = convertTimestampToDate(timestamp);
 
   return (
     <Card
@@ -30,9 +44,12 @@ export const CompanyCard = (props) => {
         <Typography align="center" gutterBottom variant="h5">
           {company.name}
         </Typography>
-        <Typography align="center" variant="body1">
-          {logo.description}
-        </Typography>
+        <Typography variant="body1">{logo.description}</Typography>
+        {/* {company.assets.length !== 0 && (
+          <Button variant="outlined" sx={{ marginTop: "1rem" }}>
+            View Assets
+          </Button>
+        )} */}
       </CardContent>
       <Box sx={{ flexGrow: 1 }} />
       <Divider />
@@ -48,7 +65,7 @@ export const CompanyCard = (props) => {
             <ClockIcon />
           </SvgIcon>
           <Typography color="text.secondary" display="inline" variant="body2">
-            {company.createdAt}
+            last updated at {time}
           </Typography>
         </Stack>
         <Stack alignItems="center" direction="row" spacing={1}>
@@ -56,7 +73,9 @@ export const CompanyCard = (props) => {
             <ArrowDownOnSquareIcon />
           </SvgIcon>
           <Typography color="text.secondary" display="inline" variant="body2">
-            {company.downloads} Downloads
+            {company.assets.length === 1
+              ? `${company.assets.length} Asset`
+              : `${company.assets.length} Assets`}
           </Typography>
         </Stack>
       </Stack>
