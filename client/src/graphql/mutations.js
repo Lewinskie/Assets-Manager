@@ -29,3 +29,55 @@ export const LOGOUT = gql`
     logout
   }
 `;
+
+export const CREATE_COMPANY = gql`
+  mutation CreateCompany($name: String!) {
+    createCompany(name: $name) {
+      id
+      name
+      createdAt
+      updatedAt
+      assets {
+        id
+        device
+        serialnumber
+        description
+        assignee
+        location
+        companyId
+        createdAt
+        updatedAt
+      }
+    }
+  }
+`;
+
+export const CREATE_ASSET = gql`
+  mutation CreateAsset(
+    $companyId: String!
+    $device: String!
+    $description: String!
+    $serialnumber: String!
+    $assignee: String!
+    $location: String!
+  ) {
+    createAsset(
+      companyId: $companyId
+      device: $device
+      description: $description
+      serialnumber: $serialnumber
+      assignee: $assignee
+      location: $location
+    ) {
+      id
+      device
+      serialnumber
+      description
+      assignee
+      location
+      companyId
+      createdAt
+      updatedAt
+    }
+  }
+`;

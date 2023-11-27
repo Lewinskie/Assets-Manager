@@ -14,7 +14,6 @@ import {
 } from "@mui/material";
 import { convertTimestampToDate } from "src/utils/get-date";
 
-
 export const CompanyCard = (props) => {
   const { company, logos } = props;
 
@@ -39,17 +38,12 @@ export const CompanyCard = (props) => {
             pb: 3,
           }}
         >
-          <Avatar src={logo.src} variant="square" />
+          {logo && <Avatar src={logo.src} variant="square" />}
         </Box>
         <Typography align="center" gutterBottom variant="h5">
           {company.name}
         </Typography>
-        <Typography variant="body1">{logo.description}</Typography>
-        {/* {company.assets.length !== 0 && (
-          <Button variant="outlined" sx={{ marginTop: "1rem" }}>
-            View Assets
-          </Button>
-        )} */}
+        {logo && <Typography variant="body1">{logo.description}</Typography>}
       </CardContent>
       <Box sx={{ flexGrow: 1 }} />
       <Divider />

@@ -2,7 +2,6 @@ import { useCallback, useMemo, useState } from "react";
 import Head from "next/head";
 import { subDays, subHours } from "date-fns";
 import ArrowDownOnSquareIcon from "@heroicons/react/24/solid/ArrowDownOnSquareIcon";
-import ArrowUpOnSquareIcon from "@heroicons/react/24/solid/ArrowUpOnSquareIcon";
 import PlusIcon from "@heroicons/react/24/solid/PlusIcon";
 import { Box, Button, Container, Stack, SvgIcon, Typography } from "@mui/material";
 import { useSelection } from "src/hooks/use-selection";
@@ -11,6 +10,7 @@ import { AssetsTable } from "src/sections/assets/assets-table";
 import { AssetsSearch } from "src/sections/assets/assets-search";
 import { useAssets } from "../hooks/use-assets";
 import { useAssetsIds } from "../hooks/use-assets-ids";
+import { CreateAssetModal } from "src/utils/create-asset-modal";
 
 const now = new Date();
 
@@ -21,6 +21,8 @@ const Page = () => {
   const assetsIds = useAssetsIds(assets);
   const assetsSelection = useSelection(assetsIds);
 
+  const [isModalOpen, setModalOpen] = useState(false);
+
   const handlePageChange = useCallback((event, value) => {
     setPage(value);
   }, []);
@@ -29,6 +31,13 @@ const Page = () => {
     setRowsPerPage(event.target.value);
   }, []);
 
+  const handleModalOpen = () => {
+    setModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setModalOpen(false);
+  };
   return (
     <>
       <Head>
@@ -47,16 +56,6 @@ const Page = () => {
               <Stack spacing={1}>
                 <Typography variant="h4">All Assets</Typography>
                 <Stack alignItems="center" direction="row" spacing={1}>
-                  {/* <Button
-                    color="inherit"
-                    startIcon={
-                      <SvgIcon fontSize="small">
-                        <ArrowUpOnSquareIcon />
-                      </SvgIcon>
-                    }
-                  >
-                    Import
-                  </Button> */}
                   <Button
                     color="inherit"
                     startIcon={
@@ -71,6 +70,7 @@ const Page = () => {
               </Stack>
               <div>
                 <Button
+                  onClick={handleModalOpen}
                   startIcon={
                     <SvgIcon fontSize="small">
                       <PlusIcon />
@@ -99,6 +99,7 @@ const Page = () => {
           </Stack>
         </Container>
       </Box>
+      <CreateAssetModal isModalOpen={isModalOpen} handleModalClose={handleModalClose} />
     </>
   );
 };

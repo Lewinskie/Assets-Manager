@@ -26,17 +26,11 @@ import {
   Typography,
 } from "@mui/material";
 import { Scrollbar } from "src/components/scrollbar";
-import { SeverityPill } from "src/components/severity-pill";
 import ArrowDownOnSquareIcon from "@heroicons/react/24/solid/ArrowDownOnSquareIcon";
 import PlusIcon from "@heroicons/react/24/solid/PlusIcon";
 import { CompaniesSearch } from "src/sections/companies/companies-search";
 import { useQuery } from "@apollo/client";
 
-const statusMap = {
-  pending: "warning",
-  delivered: "success",
-  refunded: "error",
-};
 const items = [
   {
     name: "Dragonfly Aviation",
@@ -56,14 +50,12 @@ const CompanyDetailsPage = () => {
   const router = useRouter();
   const { id } = router.query;
   // Fetch company assets
-  const { data, loading, error } = useQuery(COMPANY, {
+  const { data } = useQuery(COMPANY, {
     variables: { companyId: id },
   });
-  console.log(data);
 
   const companyData = data?.company;
   const logo = companyData ? items.find((item) => item.name === companyData.name) : null;
-  console.log(logo);
 
   return (
     <>
@@ -88,14 +80,14 @@ const CompanyDetailsPage = () => {
                     pb: 3,
                   }}
                 >
-                  {logo && (
-                    <div>
+                  <div>
+                    {logo && (
                       <Avatar src={logo.src} variant="square" sx={{ marginBottom: "1rem" }} />
-                      <Typography align="center" gutterBottom variant="h5">
-                        {companyData.name}
-                      </Typography>
-                    </div>
-                  )}
+                    )}
+                    <Typography align="center" gutterBottom variant="h5">
+                      {companyData.name}
+                    </Typography>
+                  </div>
                 </Box>
               </Stack>
             </Stack>
