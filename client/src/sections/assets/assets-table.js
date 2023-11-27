@@ -65,7 +65,6 @@ export const AssetsTable = (props) => {
             <TableBody>
               {items.map((asset) => {
                 const isSelected = selected.includes(asset.id);
-                // const createdAt = format(asset.createdAt, "dd/MM/yyyy");
 
                 return (
                   <TableRow hover key={asset.id} selected={isSelected}>

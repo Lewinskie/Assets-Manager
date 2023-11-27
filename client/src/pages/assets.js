@@ -2,7 +2,6 @@ import { useCallback, useMemo, useState } from "react";
 import Head from "next/head";
 import { subDays, subHours } from "date-fns";
 import ArrowDownOnSquareIcon from "@heroicons/react/24/solid/ArrowDownOnSquareIcon";
-import PlusIcon from "@heroicons/react/24/solid/PlusIcon";
 import { Box, Button, Container, Stack, SvgIcon, Typography } from "@mui/material";
 import { useSelection } from "src/hooks/use-selection";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
@@ -10,7 +9,6 @@ import { AssetsTable } from "src/sections/assets/assets-table";
 import { AssetsSearch } from "src/sections/assets/assets-search";
 import { useAssets } from "../hooks/use-assets";
 import { useAssetsIds } from "../hooks/use-assets-ids";
-import { CreateAssetModal } from "src/utils/create-asset-modal";
 
 const now = new Date();
 

@@ -1,5 +1,6 @@
 import PropTypes from "prop-types";
 import ArrowDownOnSquareIcon from "@heroicons/react/24/solid/ArrowDownOnSquareIcon";
+import { format } from "date-fns";
 import ClockIcon from "@heroicons/react/24/solid/ClockIcon";
 import {
   Avatar,
@@ -19,8 +20,7 @@ export const CompanyCard = (props) => {
 
   // Find the corresponding logo based on the company's name
   const logo = logos.find((item) => item.name === company.name);
-  const timestamp = company.updatedAt;
-  const time = convertTimestampToDate(timestamp);
+  // const date = format(company.createdAt, "dd/MM/yyyy");
 
   return (
     <Card
@@ -58,9 +58,9 @@ export const CompanyCard = (props) => {
           <SvgIcon color="action" fontSize="small">
             <ClockIcon />
           </SvgIcon>
-          <Typography color="text.secondary" display="inline" variant="body2">
-            last updated at {time}
-          </Typography>
+          {/* <Typography color="text.secondary" display="inline" variant="body2">
+            last updated at {date}
+          </Typography> */}
         </Stack>
         <Stack alignItems="center" direction="row" spacing={1}>
           <SvgIcon color="action" fontSize="small">
