@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { COMPANY } from "../../graphql/queries";
@@ -15,7 +15,6 @@ import {
   CardHeader,
   Container,
   Divider,
-  Grid,
   Stack,
   SvgIcon,
   Table,
@@ -30,6 +29,7 @@ import ArrowDownOnSquareIcon from "@heroicons/react/24/solid/ArrowDownOnSquareIc
 import PlusIcon from "@heroicons/react/24/solid/PlusIcon";
 import { CompaniesSearch } from "src/sections/companies/companies-search";
 import { useQuery } from "@apollo/client";
+import { CreateAssetModal } from "src/utils/create-asset-modal";
 
 const items = [
   {
@@ -47,15 +47,25 @@ const items = [
 ];
 
 const CompanyDetailsPage = () => {
+  const [isModalOpen, setModalOpen] = useState(false);
   const router = useRouter();
   const { id } = router.query;
   // Fetch company assets
-  const { data } = useQuery(COMPANY, {
+  const { data, refetch } = useQuery(COMPANY, {
     variables: { companyId: id },
   });
 
   const companyData = data?.company;
   const logo = companyData ? items.find((item) => item.name === companyData.name) : null;
+
+  // Create new asset Modal pop up functions
+  const handleModalOpen = () => {
+    setModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setModalOpen(false);
+  };
 
   return (
     <>
@@ -84,9 +94,11 @@ const CompanyDetailsPage = () => {
                     {logo && (
                       <Avatar src={logo.src} variant="square" sx={{ marginBottom: "1rem" }} />
                     )}
-                    <Typography align="center" gutterBottom variant="h5">
-                      {companyData.name}
-                    </Typography>
+                    {companyData && (
+                      <Typography align="center" gutterBottom variant="h5">
+                        {companyData.name}
+                      </Typography>
+                    )}
                   </div>
                 </Box>
               </Stack>
@@ -106,6 +118,7 @@ const CompanyDetailsPage = () => {
               </Stack>
               <Stack alignItems="center" direction="row">
                 <Button
+                  onClick={handleModalOpen}
                   startIcon={
                     <SvgIcon fontSize="small">
                       <PlusIcon />
@@ -113,7 +126,7 @@ const CompanyDetailsPage = () => {
                   }
                   variant="contained"
                 >
-                  Add
+                  New Asset
                 </Button>
               </Stack>
             </Stack>
@@ -122,7 +135,7 @@ const CompanyDetailsPage = () => {
           </Stack>
         </Container>
       </Box>
-      <Card>
+      <Card sx={{marginBottom:'2rem'}}>
         <CardHeader title="COMPANY ASSETS" />
         <Scrollbar sx={{ flexGrow: 1 }}>
           <Box sx={{ minWidth: 800 }}>
@@ -171,6 +184,12 @@ const CompanyDetailsPage = () => {
           </Button>
         </CardActions>
       </Card>
+      <CreateAssetModal
+        isModalOpen={isModalOpen}
+        handleModalClose={handleModalClose}
+        companyId={id}
+        refetch={refetch}
+      />
     </>
   );
 };

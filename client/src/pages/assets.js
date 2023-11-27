@@ -21,8 +21,6 @@ const Page = () => {
   const assetsIds = useAssetsIds(assets);
   const assetsSelection = useSelection(assetsIds);
 
-  const [isModalOpen, setModalOpen] = useState(false);
-
   const handlePageChange = useCallback((event, value) => {
     setPage(value);
   }, []);
@@ -31,13 +29,6 @@ const Page = () => {
     setRowsPerPage(event.target.value);
   }, []);
 
-  const handleModalOpen = () => {
-    setModalOpen(true);
-  };
-
-  const handleModalClose = () => {
-    setModalOpen(false);
-  };
   return (
     <>
       <Head>
@@ -68,9 +59,9 @@ const Page = () => {
                   </Button>
                 </Stack>
               </Stack>
-              <div>
+              {/* <div>
                 <Button
-                  onClick={handleModalOpen}
+                  
                   startIcon={
                     <SvgIcon fontSize="small">
                       <PlusIcon />
@@ -80,7 +71,7 @@ const Page = () => {
                 >
                   Add
                 </Button>
-              </div>
+              </div> */}
             </Stack>
             <AssetsSearch />
             <AssetsTable
@@ -99,7 +90,6 @@ const Page = () => {
           </Stack>
         </Container>
       </Box>
-      <CreateAssetModal isModalOpen={isModalOpen} handleModalClose={handleModalClose} />
     </>
   );
 };
