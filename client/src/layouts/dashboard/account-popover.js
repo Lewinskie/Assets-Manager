@@ -34,9 +34,10 @@ export const AccountPopover = (props) => {
         }}
       >
         <Typography variant="overline">Account</Typography>
+        
         <Typography color="text.secondary" variant="body2">
           {/* Revisit to fix to store data on localStorage  */}
-          {user ? user.username : "User"}
+          Welcome, {user ? user.username : "User"}
         </Typography>
       </Box>
       <Divider />
