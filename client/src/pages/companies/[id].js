@@ -27,7 +27,6 @@ import {
 import { Scrollbar } from "src/components/scrollbar";
 import ArrowDownOnSquareIcon from "@heroicons/react/24/solid/ArrowDownOnSquareIcon";
 import PlusIcon from "@heroicons/react/24/solid/PlusIcon";
-import { CompaniesSearch } from "src/sections/companies/companies-search";
 import { useQuery } from "@apollo/client";
 import { CreateAssetModal } from "src/utils/create-asset-modal";
 
@@ -135,7 +134,7 @@ const CompanyDetailsPage = () => {
           </Stack>
         </Container>
       </Box>
-      <Card sx={{marginBottom:'2rem'}}>
+      <Card sx={{ marginBottom: "2rem" }}>
         <CardHeader title="COMPANY ASSETS" />
         <Scrollbar sx={{ flexGrow: 1 }}>
           <Box sx={{ minWidth: 800 }}>
