@@ -15,17 +15,27 @@ const now = new Date();
 const Page = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const assets = useAssets(page, rowsPerPage);
+  const [searchQuery, setSearchQuery] = useState("");
+  const assets = useAssets(page, rowsPerPage, searchQuery);
   const assetsIds = useAssetsIds(assets);
   const assetsSelection = useSelection(assetsIds);
 
   const handlePageChange = useCallback((event, value) => {
-    setPage(value);
+    setPage(value - 1); // MUI uses 1- based index while react uses 0 based index
   }, []);
 
   const handleRowsPerPageChange = useCallback((event) => {
-    setRowsPerPage(event.target.value);
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0); // Reset to the 1st page when changing rowsPerPage
   }, []);
+
+  const handleSearch = useCallback(
+    (query) => {
+      setSearchQuery(query);
+      setPage(0);
+    },
+    [setSearchQuery, setPage]
+  );
 
   return (
     <>
@@ -57,21 +67,8 @@ const Page = () => {
                   </Button>
                 </Stack>
               </Stack>
-              {/* <div>
-                <Button
-                  
-                  startIcon={
-                    <SvgIcon fontSize="small">
-                      <PlusIcon />
-                    </SvgIcon>
-                  }
-                  variant="contained"
-                >
-                  Add
-                </Button>
-              </div> */}
             </Stack>
-            <AssetsSearch />
+            <AssetsSearch onSearch={handleSearch} />
             <AssetsTable
               count={assets.length}
               items={assets}

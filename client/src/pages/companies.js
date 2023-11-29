@@ -32,7 +32,7 @@ import Link from "next/link";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { CREATE_COMPANY } from "src/graphql/mutations";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 const logos = [
   {
@@ -56,7 +56,14 @@ const validationSchema = Yup.object().shape({
 
 const Page = () => {
   const { data } = useQuery(COMPANIES);
-  const companies = data?.companies || [];
+  let companies = data?.companies || [];
+  const [searchQuery, setSearchQuery] = useState("");
+  if (searchQuery) {
+    const normalizedSearchQuery = searchQuery.toLowerCase();
+    companies = companies.filter((company) =>
+      Object.values(company).join(" ").toLowerCase().includes(normalizedSearchQuery.toLowerCase())
+    );
+  }
   const [isModalOpen, setModalOpen] = useState(false);
   const [createCompany] = useMutation(CREATE_COMPANY);
 
@@ -87,6 +94,16 @@ const Page = () => {
   const handleModalClose = () => {
     setModalOpen(false);
   };
+  const handleSearch = useCallback(
+    (query) => {
+      setSearchQuery(query);
+      // setPage(0);
+    },
+    [
+      setSearchQuery,
+      // setPage
+    ]
+  );
 
   return (
     <>
@@ -132,7 +149,7 @@ const Page = () => {
                 </Button>
               </div>
             </Stack>
-            <CompaniesSearch />
+            <CompaniesSearch onSearch={handleSearch} />
             <Grid container spacing={3}>
               {companies.map((company) => (
                 <Grid xs={12} md={6} lg={4} key={company.id}>

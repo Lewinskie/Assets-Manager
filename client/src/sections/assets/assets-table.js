@@ -1,18 +1,15 @@
 import PropTypes from "prop-types";
 import { format } from "date-fns";
 import {
-  Avatar,
   Box,
   Card,
   Checkbox,
-  Stack,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TablePagination,
   TableRow,
-  Typography,
 } from "@mui/material";
 import { Scrollbar } from "src/components/scrollbar";
 
@@ -93,6 +90,7 @@ export const AssetsTable = (props) => {
           </Table>
         </Box>
       </Scrollbar>
+
       <TablePagination
         component="div"
         count={count}
