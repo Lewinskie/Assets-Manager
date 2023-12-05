@@ -24,6 +24,7 @@ const typeDefs = gql`
   type Company {
     id: ID!
     name: String!
+    description: String!
     createdAt: String!
     updatedAt: String!
     assets: [Asset]
@@ -75,7 +76,7 @@ const typeDefs = gql`
     deleteAsset(id: ID!): String
 
     # Company Mutations
-    createCompany(name: String!): Company!
+    createCompany(name: String!, description: String): Company!
     deleteCompany(id: ID!): String
   }
 `;

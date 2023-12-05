@@ -124,10 +124,18 @@ const resolvers = {
       }
       return updatedAsset;
     },
+    async deleteAsset(_, { id }, { models }) {
+      const deletedAsset = await models.Asset.findByPk(id);
+      if (!deletedAsset) {
+        throw new Error("Asset not found");
+      }
+      await models.Asset.destroy({ where: { id } });
+      return `Asset with ID Deleted ${deletedAsset}`;
+    },
 
     // Company
-    async createCompany(_, { name, logo }, { models }) {
-      return models.Company.create({ name });
+    async createCompany(_, { name, description }, { models }) {
+      return models.Company.create({ name, description });
     },
 
     async deleteCompany(_, { id }, { models }) {

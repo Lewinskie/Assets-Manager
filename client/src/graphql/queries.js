@@ -37,6 +37,7 @@ export const COMPANY = gql`
     company(id: $companyId) {
       id
       name
+      description
       createdAt
       updatedAt
       assets {
@@ -58,6 +59,7 @@ export const COMPANIES = gql`
     companies {
       id
       name
+      description
       updatedAt
       createdAt
       assets {

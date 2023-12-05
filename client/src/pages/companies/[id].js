@@ -15,6 +15,7 @@ import {
   CardHeader,
   Container,
   Divider,
+  IconButton,
   Stack,
   SvgIcon,
   Table,
@@ -27,8 +28,12 @@ import {
 import { Scrollbar } from "src/components/scrollbar";
 import ArrowDownOnSquareIcon from "@heroicons/react/24/solid/ArrowDownOnSquareIcon";
 import PlusIcon from "@heroicons/react/24/solid/PlusIcon";
-import { useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { CreateAssetModal } from "src/utils/create-asset-modal";
+import { PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { EditAssetModal } from "src/utils/edit-asset-modal";
+import { DeleteAssetModal } from "src/utils/delete-asset-modal";
+import { DELETE_ASSET } from "src/graphql/mutations";
 
 const items = [
   {
@@ -47,6 +52,9 @@ const items = [
 
 const CompanyDetailsPage = () => {
   const [isModalOpen, setModalOpen] = useState(false);
+  const [selectedAsset, setSelectedAsset] = useState(null);
+  const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [deleteAsset] = useMutation(DELETE_ASSET);
   const router = useRouter();
   const { id } = router.query;
   // Fetch company assets
@@ -64,6 +72,21 @@ const CompanyDetailsPage = () => {
 
   const handleModalClose = () => {
     setModalOpen(false);
+  };
+  const handleEdit = (asset) => {
+    setSelectedAsset(asset);
+    handleModalOpen(); // open Modal for editing
+  };
+  const handleDelete = async (asset) => {
+    try {
+      setSelectedAsset(asset);
+      setDeleteModalOpen(true);
+      await deleteAsset({ variables: { deleteAssetId: selectedAsset.id } });
+      setDeleteModalOpen(false);
+      refetch();
+    } catch (error) {
+      console.error("Error deleting asset:", error.message);
+    }
   };
 
   return (
@@ -130,7 +153,9 @@ const CompanyDetailsPage = () => {
               </Stack>
             </Stack>
 
-            {logo && <Typography variant="body1">{logo.description}</Typography>}
+            {companyData && (
+              <Typography variant="body1">{companyData.description.description}</Typography>
+            )}
           </Stack>
         </Container>
       </Box>
@@ -147,11 +172,11 @@ const CompanyDetailsPage = () => {
                   <TableCell>Serial No</TableCell>
                   <TableCell>Assignee</TableCell>
                   <TableCell>Location</TableCell>
+                  <TableCell>Actions</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {companyData?.assets.map((asset) => {
-                  // const createdAt = format(order.createdAt, "dd/MM/yyyy");
                   return (
                     <TableRow hover key={asset.id}>
                       <TableCell>{asset.id}</TableCell>
@@ -160,6 +185,20 @@ const CompanyDetailsPage = () => {
                       <TableCell>{asset.serialnumber}</TableCell>
                       <TableCell>{asset.assignee}</TableCell>
                       <TableCell>{asset.location}</TableCell>
+                      <TableCell>
+                        <div style={{ display: "flex" }}>
+                          <IconButton color="primary" onClick={() => handleEdit(asset)}>
+                            <PencilIcon style={{ height: "20px" }} />
+                          </IconButton>
+                          <IconButton
+                            size="small"
+                            color="secondary"
+                            onClick={() => handleDelete(asset)}
+                          >
+                            <TrashIcon style={{ height: "20px" }} />
+                          </IconButton>
+                        </div>
+                      </TableCell>
                     </TableRow>
                   );
                 })}
@@ -168,7 +207,7 @@ const CompanyDetailsPage = () => {
           </Box>
         </Scrollbar>
         <Divider />
-        <CardActions sx={{ justifyContent: "flex-end" }}>
+        <CardActions>
           <Button
             color="inherit"
             endIcon={
@@ -188,6 +227,24 @@ const CompanyDetailsPage = () => {
         handleModalClose={handleModalClose}
         companyId={id}
         refetch={refetch}
+      />
+      <EditAssetModal
+        isModalOpen={isModalOpen}
+        handleModalClose={handleModalClose}
+        companyId={id}
+        asset={selectedAsset}
+        refetch={refetch}
+      />
+      <DeleteAssetModal
+        isModalOpen={isDeleteModalOpen}
+        handleModalClose={() => setDeleteModalOpen(false)}
+        handleDelete={() => {
+          setDeleteModalOpen(false);
+          deleteAsset({
+            variables: { deleteAssetId: selectedAsset.id },
+          });
+          refetch();
+        }}
       />
     </>
   );

@@ -1,7 +1,6 @@
 import Head from "next/head";
 import ArrowDownOnSquareIcon from "@heroicons/react/24/solid/ArrowDownOnSquareIcon";
 import PlusIcon from "@heroicons/react/24/solid/PlusIcon";
-import { format } from "date-fns";
 import {
   Box,
   Button,
@@ -28,11 +27,11 @@ import { CompanyCard } from "src/sections/companies/company-card";
 import { CompaniesSearch } from "src/sections/companies/companies-search";
 import { useQuery, useMutation } from "@apollo/client";
 import { COMPANIES } from "src/graphql/queries";
-import Link from "next/link";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { CREATE_COMPANY } from "src/graphql/mutations";
+import { CREATE_COMPANY, DELETE_COMPANY } from "src/graphql/mutations";
 import { useCallback, useState } from "react";
+import { useRouter } from "next/router";
 
 const logos = [
   {
@@ -55,7 +54,7 @@ const validationSchema = Yup.object().shape({
 });
 
 const Page = () => {
-  const { data } = useQuery(COMPANIES);
+  const { data, refetch } = useQuery(COMPANIES);
   let companies = data?.companies || [];
   const [searchQuery, setSearchQuery] = useState("");
   if (searchQuery) {
@@ -65,7 +64,9 @@ const Page = () => {
     );
   }
   const [isModalOpen, setModalOpen] = useState(false);
-  const [createCompany] = useMutation(CREATE_COMPANY);
+  const [createCompany] = useMutation(CREATE_COMPANY, { refetchQueries: [{ query: COMPANIES }] });
+  const [deleteCompany] = useMutation(DELETE_COMPANY);
+  const router = useRouter();
 
   const formik = useFormik({
     initialValues: {
@@ -97,13 +98,23 @@ const Page = () => {
   const handleSearch = useCallback(
     (query) => {
       setSearchQuery(query);
-      // setPage(0);
     },
-    [
-      setSearchQuery,
-      // setPage
-    ]
+    [setSearchQuery]
   );
+  const handleDelete = async (companyId) => {
+    try {
+      console.log("deleting company with id:", companyId);
+      await deleteCompany({ variables: { deleteCompanyId: companyId } });
+      console.log("Deletion successful");
+      refetch();
+    } catch (error) {
+      console.error("Error deleting company:", error.message);
+    }
+  };
+
+  const handleViewClick = (companyId) => {
+    router.push(`/companies/${companyId}`);
+  };
 
   return (
     <>
@@ -153,13 +164,12 @@ const Page = () => {
             <Grid container spacing={3}>
               {companies.map((company) => (
                 <Grid xs={12} md={6} lg={4} key={company.id}>
-                  <Link
-                    href={`/companies/${company.id}`}
-                    passHref
-                    style={{ textDecoration: "none" }}
-                  >
-                    <CompanyCard company={company} logos={logos} />
-                  </Link>
+                  <CompanyCard
+                    company={company}
+                    logos={logos}
+                    onDelete={() => handleDelete(company.id)}
+                    onView={() => handleViewClick(company.id)}
+                  />
                 </Grid>
               ))}
             </Grid>
@@ -200,18 +210,18 @@ const Page = () => {
                 error={formik.touched.name && Boolean(formik.errors.name)}
                 helperText={formik.touched.name && formik.errors.name}
               />
-              {/* <FormLabel>Description</FormLabel>
-          <TextField
-          multiline
-          rows={5}
-          fullWidth
-          id="description"
-          name='description'
-          value={formik.values.description}
-          onChange={formik.handleChange}
-          error={formik.touched.description && Boolean(formik.errors.description)}
-          helperText={formik.touched.description && formik.errors.description}
-          /> */}
+              <FormLabel>Description</FormLabel>
+              <TextField
+                multiline
+                rows={5}
+                fullWidth
+                id="description"
+                name="description"
+                value={formik.values.description}
+                onChange={formik.handleChange}
+                error={formik.touched.description && Boolean(formik.errors.description)}
+                helperText={formik.touched.description && formik.errors.description}
+              />
             </DialogContent>
             <DialogActions>
               <Button onClick={handleModalClose} color="primary">
