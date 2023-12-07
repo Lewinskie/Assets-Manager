@@ -16,9 +16,10 @@ import { useState } from "react";
 import { DeleteCompanyModal } from "src/utils/delete-company-modal";
 
 export const CompanyCard = (props) => {
-  const { company, logos, onView, onDelete } = props;
+  const { company, logos, onView, onDelete, generic } = props;
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
   // Find the corresponding logo based on the company's name
+
   const logo = logos.find((item) => item.name === company.name);
   const handleDeleteClick = () => {
     setDeleteModalOpen(true);
@@ -30,7 +31,8 @@ export const CompanyCard = (props) => {
   const handleDeleteCancel = () => {
     setDeleteModalOpen(false);
   };
-
+  // Check if logo is presnt or use the generic logo
+  const displayLogo = logo ? logo.src : generic.src;
   return (
     <>
       <Card
@@ -48,7 +50,18 @@ export const CompanyCard = (props) => {
               pb: 3,
             }}
           >
-            {logo && <Avatar src={logo.src} variant="square" />}
+            {displayLogo && (
+              <Avatar
+                src={displayLogo}
+                variant="square"
+                sx={{
+                  height: "60px",
+                  width: "80px",
+                  backgroundSize: "contain",
+                  backgroundPosition: "center",
+                }}
+              />
+            )}
           </Box>
           <Typography align="center" gutterBottom variant="h5">
             {company.name}
@@ -118,4 +131,7 @@ export const CompanyCard = (props) => {
 
 CompanyCard.propTypes = {
   company: PropTypes.object.isRequired,
+  generic: {
+    src: "/assets/logos/default-logo.png",
+  },
 };

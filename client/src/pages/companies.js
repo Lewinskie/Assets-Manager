@@ -37,16 +37,20 @@ const logos = [
   {
     name: "Dragonfly Aviation",
     src: "/assets/logos/Dragonfly.png",
-    description:
-      "Dragonfly Aviation Limited is an aviation company specializing in passenger and cargo services within Africa, the Indian Ocean Islands, and the Middle East.",
   },
   {
     name: "Advantage Air Travel",
     src: "/assets/logos/advantage.png",
-    description:
-      "Advantage Air Travel Limited is an aviation company specializing in the provision of cargo freight services in East Africa, the Horn of Africa and regionally in the continent.",
+  },
+  {
+    name: "Grand Oasis Hotel Wajir",
+    src: "/assets/logos/grandoasis.png",
   },
 ];
+const generic = {
+  name: "default",
+  src: "/assets/logos/default-logo.png",
+};
 // Yup validation schema
 const validationSchema = Yup.object().shape({
   name: Yup.string().required("Company name required"),
@@ -169,6 +173,7 @@ const Page = () => {
                     logos={logos}
                     onDelete={() => handleDelete(company.id)}
                     onView={() => handleViewClick(company.id)}
+                    generic={generic}
                   />
                 </Grid>
               ))}

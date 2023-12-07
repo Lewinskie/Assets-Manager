@@ -153,9 +153,7 @@ const CompanyDetailsPage = () => {
               </Stack>
             </Stack>
 
-            {companyData && (
-              <Typography variant="body1">{companyData.description.description}</Typography>
-            )}
+            {companyData && <Typography variant="body1">{companyData.description}</Typography>}
           </Stack>
         </Container>
       </Box>
