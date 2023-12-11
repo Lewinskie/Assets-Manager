@@ -3,6 +3,7 @@ import { useRouter } from "next/navigation";
 import PropTypes from "prop-types";
 import { Box, Divider, MenuItem, MenuList, Popover, Typography } from "@mui/material";
 import { useAuth } from "src/context/auth-context";
+import { capitalizeFirstLetter } from "src/utils/capitalize-first-letter";
 
 export const AccountPopover = (props) => {
   const { anchorEl, onClose, open } = props;
@@ -34,10 +35,10 @@ export const AccountPopover = (props) => {
         }}
       >
         <Typography variant="overline">Account</Typography>
-        
+
         <Typography color="text.secondary" variant="body2">
           {/* Revisit to fix to store data on localStorage  */}
-          Welcome, {user ? user.username : "User"}
+          Welcome, {user ? capitalizeFirstLetter(user.username) : "User"}
         </Typography>
       </Box>
       <Divider />

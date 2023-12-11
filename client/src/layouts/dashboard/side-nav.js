@@ -18,6 +18,7 @@ import { Scrollbar } from "src/components/scrollbar";
 import { items } from "./config";
 import { SideNavItem } from "./side-nav-item";
 import { useAuth } from "src/context/auth-context";
+import { capitalizeFirstLetter } from "src/utils/capitalize-first-letter";
 
 export const SideNav = (props) => {
   const { open, onClose } = props;
@@ -79,7 +80,7 @@ export const SideNav = (props) => {
                 </Typography>
                 &nbsp;
                 <Typography color="aquamarine" variant="body2">
-                  {user ? user.username : "User"}
+                  {user ? capitalizeFirstLetter(user.username) : "User"}
                 </Typography>
               </div>
             </div>
@@ -121,6 +122,27 @@ export const SideNav = (props) => {
           </Stack>
         </Box>
         <Divider sx={{ borderColor: "neutral.700" }} />
+        <div
+          style={{
+            margin: "1rem",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <Typography variant="caption" color="dimgray" sx={{ fontWeight: "light" }}>
+            Built and managed by&nbsp;
+            <NextLink
+              style={{ color: "aquamarine", textDecoration: "none" }}
+              href="https://github.com/Lewinskie"
+            >
+              lewinskie
+            </NextLink>
+          </Typography>
+          <Typography variant="caption" color="aquamarine" sx={{ fontWeight: "light" }}>
+            assets manager &copy; 2023
+          </Typography>
+        </div>
       </Box>
     </Scrollbar>
   );
