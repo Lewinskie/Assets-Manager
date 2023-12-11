@@ -55,6 +55,8 @@ const typeDefs = gql`
     register(username: String!, email: String!, password: String!): User!
     login(email: String!, password: String!): AuthData
     logout: String!
+    deleteUser(id: ID!): String
+    updateUser(id: ID!, username: String, email: String, password: String): User
 
     # Asset Mutations
     createAsset(

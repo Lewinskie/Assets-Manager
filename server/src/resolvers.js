@@ -1,6 +1,7 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { generateToken } = require("../utils/generate-token");
+const { Op } = require("sequelize");
 
 const resolvers = {
   Query: {
@@ -16,7 +17,7 @@ const resolvers = {
         const userId = req.id;
 
         if (!userId) {
-          throw new Error("User not found");
+          throw new Error("User not authenticated");
         }
         const user = await models.User.findByPk(userId);
         if (!user) {
@@ -33,7 +34,7 @@ const resolvers = {
           },
         };
       } catch (error) {
-        throw new Error("Not authenticated");
+        throw new Error("Authentication failed");
       }
     },
     async companies(_, __, { models }) {
@@ -60,14 +61,19 @@ const resolvers = {
       return user;
     },
     async login(_, { email, password }, { models }) {
-      const user = await models.User.findOne({ where: { email } });
+      const user = await models.User.findOne({
+        where: { email: { [Op.like]: email } },
+      });
       if (!user) {
-        throw new Error("User not found");
+        throw new Error("Invalid Email or Password");
       }
+
       const valid = await bcrypt.compare(password, user.password);
+
       if (!valid) {
-        throw new Error("Invalid Password or Email");
+        throw new Error("Invalid Email or Password ");
       }
+      // Generate Token
       const token = generateToken(user);
 
       return {
@@ -87,6 +93,31 @@ const resolvers = {
       //   localStorage.removeItem("authToken", "user");
       // }
       return "User successfully logged out";
+    },
+    async deleteUser(_, { id }, { models }) {
+      const user = await models.User.findByPk(id);
+      if (!user) {
+        throw new Error("User not found");
+      }
+      await models.User.destroy({ where: { id } });
+      return `User with ID ${id} deleted successfully`;
+    },
+    async updateUser(_, { id, username, email, password }, { models }) {
+      const [updatedRowsCount, [updatedUser]] = await models.User.update(
+        {
+          username,
+          email,
+          password,
+        },
+        {
+          returning: true,
+          where: { id },
+        }
+      );
+      if (updatedRowsCount === 0) {
+        throw new Error("User not found");
+      }
+      return updatedUser;
     },
 
     // Assets

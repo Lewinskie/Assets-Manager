@@ -10,7 +10,7 @@ import { useAuth } from "src/context/auth-context";
 
 const Page = () => {
   const router = useRouter();
-  // const authContext = useAuthContext();
+  const auth = useAuth();
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -25,7 +25,7 @@ const Page = () => {
     }),
     onSubmit: async (values, helpers) => {
       try {
-        await useAuth.signUp(values.email, values.name, values.password);
+        await auth.signUp(values.name, values.email, values.password);
         router.push("/");
       } catch (err) {
         helpers.setStatus({ success: false });
