@@ -30,6 +30,18 @@ export const LOGOUT = gql`
   }
 `;
 
+export const UPDATE_USER = gql`
+  mutation UpdateUser($updateUserId: ID!, $username: String, $email: String, $password: String) {
+    updateUser(id: $updateUserId, username: $username, email: $email, password: $password) {
+      id
+      username
+      email
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
 export const CREATE_COMPANY = gql`
   mutation CreateCompany($name: String!, $description: String!) {
     createCompany(name: $name, description: $description) {

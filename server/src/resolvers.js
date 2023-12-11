@@ -102,6 +102,23 @@ const resolvers = {
       await models.User.destroy({ where: { id } });
       return `User with ID ${id} deleted successfully`;
     },
+    async updateUser(_, { id, username, email, password }, { models }) {
+      const [updatedRowsCount, [updatedUser]] = await models.User.update(
+        {
+          username,
+          email,
+          password,
+        },
+        {
+          returning: true,
+          where: { id },
+        }
+      );
+      if (updatedRowsCount === 0) {
+        throw new Error("User not found");
+      }
+      return updatedUser;
+    },
 
     // Assets
     async createAsset(

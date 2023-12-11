@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
 import { CHECK_AUTH } from "src/graphql/queries";
-import { LOGIN, LOGOUT, REGISTER } from "src/graphql/mutations";
+import { LOGIN, LOGOUT, REGISTER, UPDATE_USER } from "src/graphql/mutations";
 const AuthContext = createContext();
 import { useApolloClient } from "@apollo/client";
 
@@ -25,6 +25,7 @@ export const AuthProvider = ({ children }) => {
   const [loginMutation] = useMutation(LOGIN);
   const [logoutMutation] = useMutation(LOGOUT);
   const [registerMutation] = useMutation(REGISTER);
+  const [updateUserMutation] = useMutation(UPDATE_USER);
   const client = useApolloClient();
 
   useEffect(() => {
@@ -110,10 +111,28 @@ export const AuthProvider = ({ children }) => {
       console.error("Error durng registration:", error);
     }
   };
+  const updateUser = async (updateUserId, username, email, password) => {
+    try {
+      const { data } = await updateUserMutation({
+        variables: { updateUserId, username, email, password },
+      });
+      // Update the user data in the context
+      setAuth((prevAuth) => ({
+        ...prevAuth,
+        user: data.updateUser,
+      }));
+      console.log("User profile updated successfully!", data.updateUser);
+    } catch (error) {
+      console.error("Error updating user profile:", error);
+      throw error;
+    }
+  };
 
   const signOut = async () => {
     try {
       await logoutMutation();
+      localStorage.removeItem("userData");
+      localStorage.removeItem("token");
       setAuth({
         user: null,
         token: null,
@@ -123,7 +142,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ ...auth, signIn, signOut, signUp }}>
+    <AuthContext.Provider value={{ ...auth, signIn, signOut, signUp, updateUser }}>
       {children(auth)}
     </AuthContext.Provider>
   );
