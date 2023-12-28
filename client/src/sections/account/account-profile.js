@@ -4,11 +4,6 @@ import { capitalizeFirstLetter } from "src/utils/capitalize-first-letter";
 
 const defaults = {
   avatar: "/assets/avatars/avatar-anika-visser.png",
-  city: "Los Angeles",
-  country: "USA",
-  jobTitle: "Senior Developer",
-  name: "Anika Visser",
-  timezone: "GTM-7",
 };
 
 export const AccountProfile = () => {

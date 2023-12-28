@@ -38,7 +38,7 @@ export const EditAssetModal = (props) => {
     onSubmit: async (values) => {
       try {
         await updateAsset({
-          variables: { updateAssetId: asset.id, companyId, ...values },
+          variables: { input: { updateAssetId: asset.id, companyId, ...values } },
         });
         handleModalClose();
         formik.resetForm();

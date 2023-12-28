@@ -1,6 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
 import Head from "next/head";
-import { subDays, subHours } from "date-fns";
 import ArrowDownOnSquareIcon from "@heroicons/react/24/solid/ArrowDownOnSquareIcon";
 import { Box, Button, Container, Stack, SvgIcon, Typography } from "@mui/material";
 import { useSelection } from "src/hooks/use-selection";
@@ -9,8 +8,7 @@ import { AssetsTable } from "src/sections/assets/assets-table";
 import { AssetsSearch } from "src/sections/assets/assets-search";
 import { useAssets } from "../hooks/use-assets";
 import { useAssetsIds } from "../hooks/use-assets-ids";
-
-const now = new Date();
+import Papa from "papaparse";
 
 const Page = () => {
   const [page, setPage] = useState(0);
@@ -18,7 +16,6 @@ const Page = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const assets = useAssets(page, rowsPerPage, searchQuery);
   const assetsIds = useAssetsIds(assets);
-  const assetsSelection = useSelection(assetsIds);
 
   const handlePageChange = useCallback((event, value) => {
     setPage(value - 1); // MUI uses 1- based index while react uses 0 based index
@@ -36,6 +33,24 @@ const Page = () => {
     },
     [setSearchQuery, setPage]
   );
+
+  // Function to export all assets to CSV
+  const exportToCSV = useCallback(() => {
+    const csvData = Papa.unparse(assets);
+    const blob = new Blob([csvData], { type: "data:text/csv;charset=utf-8," });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    if (link.download !== undefined) {
+      link.setAttribute("href", url);
+      link.setAttribute("download", "assets.csv");
+      link.style.visibility = "hidden";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      // Revoke the object URL to free up resources
+      URL.revokeObjectURL(url);
+    }
+  }, [assets]);
 
   return (
     <>
@@ -62,6 +77,7 @@ const Page = () => {
                         <ArrowDownOnSquareIcon />
                       </SvgIcon>
                     }
+                    onClick={exportToCSV}
                   >
                     Export
                   </Button>
@@ -72,15 +88,10 @@ const Page = () => {
             <AssetsTable
               count={assets.length}
               items={assets}
-              onDeselectAll={assetsSelection.handleDeselectAll}
-              onDeselectOne={assetsSelection.handleDeselectOne}
               onPageChange={handlePageChange}
               onRowsPerPageChange={handleRowsPerPageChange}
-              onSelectAll={assetsSelection.handleSelectAll}
-              onSelectOne={assetsSelection.handleSelectOne}
               page={page}
               rowsPerPage={rowsPerPage}
-              selected={assetsSelection.selected}
             />
           </Stack>
         </Container>

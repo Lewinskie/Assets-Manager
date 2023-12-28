@@ -3,8 +3,6 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { COMPANY } from "../../graphql/queries";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
-import { format } from "date-fns";
-import PropTypes from "prop-types";
 import ArrowRightIcon from "@heroicons/react/24/solid/ArrowRightIcon";
 import {
   Avatar,
@@ -39,19 +37,16 @@ const items = [
   {
     name: "Dragonfly Aviation",
     src: "/assets/logos/Dragonfly.png",
-    description:
-      "Dragonfly Aviation Limited is an aviation company specializing in passenger and cargo services within Africa, the Indian Ocean Islands, and the Middle East.",
   },
   {
     name: "Advantage Air Travel",
     src: "/assets/logos/advantage.png",
-    description:
-      "Advantage Air Travel Limited is an aviation company specializing in the provision of cargo freight services in East Africa, the Horn of Africa and regionally in the continent.",
   },
 ];
 
 const CompanyDetailsPage = () => {
-  const [isModalOpen, setModalOpen] = useState(false);
+  const [isCreateModalOpen, setCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setEditModalOpen] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState(null);
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
   const [deleteAsset] = useMutation(DELETE_ASSET);
@@ -66,16 +61,15 @@ const CompanyDetailsPage = () => {
   const logo = companyData ? items.find((item) => item.name === companyData.name) : null;
 
   // Create new asset Modal pop up functions
-  const handleModalOpen = () => {
-    setModalOpen(true);
+  const handleCreateModalOpen = () => {
+    setCreateModalOpen(true);
   };
-
-  const handleModalClose = () => {
-    setModalOpen(false);
+  const handleCreateModalClose = () => {
+    setCreateModalOpen(false);
   };
   const handleEdit = (asset) => {
     setSelectedAsset(asset);
-    handleModalOpen(); // open Modal for editing
+    setEditModalOpen(true); // open Modal for editing
   };
   const handleDelete = async (asset) => {
     try {
@@ -140,7 +134,7 @@ const CompanyDetailsPage = () => {
               </Stack>
               <Stack alignItems="center" direction="row">
                 <Button
-                  onClick={handleModalOpen}
+                  onClick={handleCreateModalOpen}
                   startIcon={
                     <SvgIcon fontSize="small">
                       <PlusIcon />
@@ -221,14 +215,14 @@ const CompanyDetailsPage = () => {
         </CardActions>
       </Card>
       <CreateAssetModal
-        isModalOpen={isModalOpen}
-        handleModalClose={handleModalClose}
+        isModalOpen={isCreateModalOpen}
+        handleModalClose={handleCreateModalClose}
         companyId={id}
         refetch={refetch}
       />
       <EditAssetModal
-        isModalOpen={isModalOpen}
-        handleModalClose={handleModalClose}
+        isModalOpen={isEditModalOpen}
+        handleModalClose={() => setEditModalOpen(false)}
         companyId={id}
         asset={selectedAsset}
         refetch={refetch}
