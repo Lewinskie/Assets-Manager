@@ -23,5 +23,12 @@ module.exports = (sequelize, DataTypes) => {
   Company.associate = (models) => {
     models.Company.hasMany(models.Asset, { foreignKey: "companyId" });
   };
+  Company.addHook("beforeDestroy", async (company, options) => {
+    await models.BackupCompany.create({
+      ...company.dataValues,
+      deletedBy: options.user ? options.user.username : "unknown",
+      deletedAt: new Date(),
+    });
+  });
   return Company;
 };

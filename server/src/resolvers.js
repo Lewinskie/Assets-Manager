@@ -155,12 +155,19 @@ const resolvers = {
       }
       return updatedAsset;
     },
-    async deleteAsset(_, { id }, { models }) {
+    async deleteAsset(_, { id }, { models, req }) {
       const deletedAsset = await models.Asset.findByPk(id);
       if (!deletedAsset) {
         throw new Error("Asset not found");
       }
+
+      // Log the user who is deleting the asset
+      options.user = req.user;
+
+      // Now delete the asset
       await models.Asset.destroy({ where: { id } });
+
+      // The beforeDestroy hook in the Asset model will automatically create a backup entry
       return `Asset with ID Deleted ${deletedAsset}`;
     },
 
@@ -169,12 +176,13 @@ const resolvers = {
       return models.Company.create({ name, description });
     },
 
-    async deleteCompany(_, { id }, { models }) {
+    async deleteCompany(_, { id }, { models, req }) {
+      const user = req.user;
       // Delete associated assets first
       await models.Asset.destroy({ where: { companyId: id } });
 
       // Now delete the company
-      await models.Company.destroy({ where: { id } });
+      await models.Company.destroy({ where: { id }, user });
       return "Company deleted successfully";
     },
   },
